@@ -14,7 +14,7 @@ See [Patterns](https://www.lua.org/pil/20.2.html) in Lua docs.
 
 ## Style
 
-You can style the matches with:
+You can custom style matches with:
 
 ```
 require('plugins/vis-highlight').style = 'back:#444444,fore:#cccccc'
