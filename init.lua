@@ -6,27 +6,23 @@ M.patterns = {}
 M.STYLE_ID = 0
 M.style = nil
 
-function style(from, ends, viewport)
-	local style_start  = from - 1 + viewport.start
-	local style_finish = ends - 1 + viewport.start
-	if M.style then
-		win:style(M.STYLE_ID, style_start, style_finish)
-	else
-		win:style(win.STYLE_CURSOR, style_start, style_finish)
+function match_iterator(pattern, content)
+	local init = 1
+	return function()
+		local from, ends = string.find(content, pattern, init)
+		if from == nil then return nil end
+		init = ends + 1
+		return from, ends
 	end
 end
 
-function match(pattern, init, viewport, content)
-	local from, ends = string.find(content, pattern, init)
-	if from == nil then return viewport.finish end
-	style(from, ends, viewport)
-	return ends + 1
-end
-
 function highlight(pattern, viewport, content)
-	local init = 1
-	while init < viewport.finish do
-		init = match(pattern, init, viewport, content)
+	local offset = viewport.start
+	for from, ends in match_iterator(pattern, content)
+		local style_start  = from - 1 + offset
+		local style_finish = ends - 1 + offset
+		win:style(M.style and M.STYLE_ID or win.STYLE_CURSOR, start, finish)
+		if ends >= viewport.finish then break end
 	end
 end
 
@@ -40,15 +36,11 @@ function on_win_highlight(win)
 	end
 end
 
-vis.events.subscribe(vis.events.WIN_HIGHLIGHT, on_win_highlight)
-
 function on_win_open(win)
 	if M.style then
 		win:style_define(M.STYLE_ID, M.style)
 	end
 end
-
-vis.events.subscribe(vis.events.WIN_OPEN, on_win_open)
 
 function hi_command(argv, force, win, selection, range)
 	local pattern_a = argv[1]
@@ -85,6 +77,10 @@ function hi_cl_command()
 	M.patterns = {}
 	vis:info 'cleared patterns'
 end
+
+vis.events.subscribe(vis.events.WIN_HIGHLIGHT, on_win_highlight)
+
+vis.events.subscribe(vis.events.WIN_OPEN, on_win_open)
 
 vis:command_register('hi', hi_command)
 
