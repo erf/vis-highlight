@@ -54,9 +54,7 @@ function hi_command(argv, force, win, selection, range)
 	local pattern_arg = argv[1]
 	local enabled_arg = argv[2]
 
-	if not pattern_arg then 
-		return
-	end 
+	if not pattern_arg then return end
 
 	local enabled
 	if enabled_arg == nil or enabled_arg == "on" then
