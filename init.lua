@@ -32,6 +32,7 @@ function highlight(pattern, win, viewport, content)
 end
 
 function on_win_highlight(win)
+	if M.styleId == nil then return end
 	local viewport = win.viewport
 	local content = win.file:content(viewport)
 	for pattern, enabled in pairs(M.patterns) do
