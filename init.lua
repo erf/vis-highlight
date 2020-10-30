@@ -72,8 +72,8 @@ function hi_ls_command(argv, force, win, selection, range)
 	local t = {}
 	table.insert(t, 'patterns:')
 	for pattern, enabled in pairs(M.patterns) do
-		table.insert(t, '\"' .. pattern .. '\" ' .. (enabled and 'on' or 'off'))
-		--table.insert(t, pattern)
+		local str_esc = pattern:gsub('\n', '\\n')
+		table.insert(t, '\"' .. str_esc .. '\" ' .. (enabled and 'on' or 'off'))
 	end
 	local s = table.concat(t, '\n')
 	vis:message(s)
