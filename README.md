@@ -10,8 +10,7 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 `:hi-cl` - clear patterns
 
-You can add multiple patterns which will highlight the text until cleared or 
-disabled.
+You can add multiple patterns to  highlight text until cleared or disabled.
 
 You can prepare patterns in your `visrc.lua` file with:
 
