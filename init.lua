@@ -6,7 +6,7 @@ M.style = nil
 local HIGHLIGHT_STYLE_ID = 0 -- not sure what to set this..
 local styleId = nil
 
-function match_iterator(pattern, content)
+function pattern_iterator(pattern, content)
 	local init = 1
 	return function()
 		local from, ends = string.find(content, pattern, init)
@@ -16,16 +16,15 @@ function match_iterator(pattern, content)
 	end
 end
 
-function style(from, ends, offset, win)
+function set_style(from, ends, offset, win)
 	local start  = from - 1 + offset
 	local finish = ends - 1 + offset
 	win:style(styleId, start, finish)
 end
 
 function highlight(pattern, win, viewport, content)
-	local offset = viewport.start
-	for from, ends in match_iterator(pattern, content) do
-		style(from, ends, offset, win)
+	for from, ends in pattern_iterator(pattern, content) do
+		set_style(from, ends, viewport.start, win)
 		if ends >= viewport.finish then break end
 	end
 end
