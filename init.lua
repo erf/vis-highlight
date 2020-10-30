@@ -6,27 +6,27 @@ M.patterns = {}
 M.STYLE_ID = 0
 M.style = nil
 
--- highlight patterns in visible area
+function style(from, ends, viewport)
+	local style_start  = from - 1 + viewport.start
+	local style_finish = ends - 1 + viewport.start
+	if M.style then
+		win:style(M.STYLE_ID, style_start, style_finish)
+	else
+		win:style(win.STYLE_CURSOR, style_start, style_finish)
+	end
+end
+
+function match(pattern, init, viewport, content)
+	local from, ends = string.find(content, pattern, init)
+	if from == nil then return viewport.finish end
+	style(from, ends, viewport)
+	return ends + 1
+end
+
 function highlight(pattern, viewport, content)
-
 	local init = 1
-
 	while init < viewport.finish do
-
-		local from, ends = string.find(content, pattern, init)
-
-		if from == nil then break end
-
-		local style_start  = from - 1 + viewport.start
-		local style_finish = ends - 1 + viewport.start
-
-		if M.style then
-			win:style(M.STYLE_ID, style_start, style_finish)
-		else
-			win:style(win.STYLE_CURSOR, style_start, style_finish)
-		end
-
-		init = ends + 1
+		init = match(pattern, init, viewport, content)
 	end
 end
 
@@ -51,22 +51,22 @@ end
 vis.events.subscribe(vis.events.WIN_OPEN, on_win_open)
 
 function hi_command(argv, force, win, selection, range)
-	local pattern_arg = argv[1]
-	local enabled_arg = argv[2]
+	local pattern_a = argv[1]
+	local enabled_a = argv[2]
 
-	if not pattern_arg then return end
+	if not pattern_a then return end
 
-	local enabled
-	if enabled_arg == nil or enabled_arg == "on" then
+	local enabled = true
+	if enabled_a == nil or enabled_a == "on" then
 		enabled = true
-	elseif enabled_arg == "off" then
+	elseif enabled_a == "off" then
 		enabled = false
 	else
 		vis:info('invalid arg')
 		return
 	end
 
-	M.patterns[pattern_arg] = enabled
+	M.patterns[pattern_a] = enabled
 
 	return true
 end
