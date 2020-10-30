@@ -50,19 +50,19 @@ function on_win_open(win)
 end
 
 function hi_command(argv, force, win, selection, range)
-	local pattern_a = argv[1]
-	local enabled_a = argv[2]
+	local pattern = argv[1]
+	local enabled = argv[2]
 
-	if not pattern_a then return end
+	if not pattern then return end
 
-	local enabled = true
-	if enabled_a == nil or enabled_a == "on" then
-		enabled = true
-	elseif enabled_a == "off" then
-		enabled = false
+	local is_enabled = true
+	if enabled == nil or enabled == "on" then
+		is_enabled = true
+	elseif enabled == "off" then
+		is_enabled = false
 	end
 
-	M.patterns[pattern_a] = enabled
+	M.patterns[pattern] = is_enabled
 
 	return true
 end
@@ -84,10 +84,10 @@ function hi_cl_command(argv, force, win, selection, range)
 end
 
 function hi_rm_command(argv, force, win, selection, range)
-	local pattern_a = argv[1]
-	if not pattern_a then return end
-	M.patterns[pattern_a] = nil
-	vis:info('pattern \"' .. pattern_a .. '\" removed')
+	local pattern = argv[1]
+	if not pattern then return end
+	M.patterns[pattern] = nil
+	vis:info('pattern \"' .. pattern .. '\" removed')
 	return true
 end
 
