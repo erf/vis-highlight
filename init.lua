@@ -7,10 +7,8 @@ M.STYLE_ID = 0
 M.style = nil
 
 -- highlight patterns in visible area
-function highlight(pattern, win)
+function highlight(pattern, viewport, content)
 
-	local viewport = win.viewport
-	local content = win.file:content(viewport)
 	local init = 1
 
 	while init < viewport.finish do
@@ -33,9 +31,11 @@ function highlight(pattern, win)
 end
 
 function on_win_highlight(win)
+	local viewport = win.viewport
+	local content = win.file:content(viewport)
 	for pattern, enabled in pairs(M.patterns) do
 		if enabled then
-			highlight(pattern, win)
+			highlight(pattern, viewport, content)
 		end
 	end
 end
