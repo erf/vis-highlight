@@ -10,22 +10,17 @@ function highlight(pattern, win)
 	local content = win.file:content(viewport)
 	local init = 1
 
-	while true do
+	while init < viewport.finish do
+
 		local from, ends = string.find(content, pattern, init)
 
-		if from == nil then 
-			break
-		end
+		if from == nil then break end
 
 		local style_start  = from - 1 + viewport.start
 		local style_finish = ends - 1 + viewport.start
 		win:style(win.STYLE_CURSOR, style_start, style_finish)
 
 		init = ends + 1
-
-		if init >= viewport.finish then
-			break
-		end
 	end
 end
 
