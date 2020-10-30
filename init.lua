@@ -41,11 +41,10 @@ function on_win_highlight(win)
 end
 
 function on_win_open(win)
+	M.styleId = win.STYLE_CURSOR
 	if M.style then
 		M.styleId = M.HIGHLIGHT_STYLE_ID
 		win:style_define(M.styleId, M.style)
-	else
-		M.styleId = win.STYLE_CURSOR
 	end
 end
 
