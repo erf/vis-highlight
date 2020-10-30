@@ -1,9 +1,10 @@
 local M = {}
 
-M.HIGHLIGHT_STYLE_ID = 0
 M.patterns = {}
-M.styleId = nil
 M.style = nil
+
+local HIGHLIGHT_STYLE_ID = 0 -- not sure what to set this..
+local styleId = nil
 
 function match_iterator(pattern, content)
 	local init = 1
@@ -18,7 +19,7 @@ end
 function style(from, ends, offset, win)
 	local start  = from - 1 + offset
 	local finish = ends - 1 + offset
-	win:style(M.styleId, start, finish)
+	win:style(styleId, start, finish)
 end
 
 function highlight(pattern, win, viewport, content)
@@ -30,7 +31,7 @@ function highlight(pattern, win, viewport, content)
 end
 
 function on_win_highlight(win)
-	if M.styleId == nil then return end
+	if styleId == nil then return end
 	local viewport = win.viewport
 	local content = win.file:content(viewport)
 	for pattern, enabled in pairs(M.patterns) do
@@ -41,10 +42,10 @@ function on_win_highlight(win)
 end
 
 function on_win_open(win)
-	M.styleId = win.STYLE_CURSOR
+	styleId = win.STYLE_CURSOR
 	if M.style then
-		M.styleId = M.HIGHLIGHT_STYLE_ID
-		win:style_define(M.styleId, M.style)
+		styleId = HIGHLIGHT_STYLE_ID
+		win:style_define(styleId, M.style)
 	end
 end
 
