@@ -4,7 +4,7 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 ## Commands
  
-`:hi [pattern] (on/off)` - highlight text with Lua pattern
+`:hi [pattern] [style]` - highlight text with Lua pattern and optional style
 
 `:hi-ls` - list patterns
 
