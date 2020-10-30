@@ -61,7 +61,7 @@ function hi_ls_command()
 	local t = {}
 	table.insert(t, 'patterns:')
 	for pattern, enabled in pairs(M.patterns) do
-		table.insert(t, pattern .. ' ' .. (enabled and 'on' or 'off'))
+		table.insert(t, '\"' .. pattern .. '\" ' .. (enabled and 'on' or 'off'))
 	end
 	local s = table.concat(t, '\n')
 	vis:message(s)
