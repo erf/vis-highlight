@@ -1,9 +1,7 @@
 local M = {}
 
+M.HIGHLIGHT_STYLE_ID = 0
 M.patterns = {}
-
--- TODO set style for a spesific pattern?
-local HIGHLIGHT_STYLE_ID = 16
 M.styleId = nil
 M.style = nil
 
@@ -44,7 +42,7 @@ end
 
 function on_win_open(win)
 	if M.style then
-		M.styleId = HIGHLIGHT_STYLE_ID
+		M.styleId = M.HIGHLIGHT_STYLE_ID
 		win:style_define(M.styleId, M.style)
 	else
 		M.styleId = win.STYLE_CURSOR
