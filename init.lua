@@ -1,31 +1,32 @@
 local M = {}
 
 M.patterns = {}
+M.style = "" -- TOOD
 
+-- highlight patterns in visible area
 function highlight(pattern, win)
 
-	-- search through visible area to highlight patterns
 	local viewport = win.viewport
 	local content = win.file:content(viewport)
 	local offset = viewport.start
-	local search_from = 0
+	local init = 1
 
 	while true do
-		-- note: string.find() returns 1-based index, not 0-based
-		local from, to = string.find(content, pattern, search_from)
+		local from, ends = string.find(content, pattern, init)
 
-		-- stop searching if no more matches found
-		if from == nil then break end
+		if from == nil then 
+			break
+		end
 
-		-- mark
-		-- convert from 1-based index to 0-based
-		-- also add the offset
-		local mark_from = from - 1 + offset
-		local mark_to = to - 1 + offset
-		win:style(win.STYLE_CURSOR, mark_from, mark_to)
+		local style_start  = from - 1 + offset
+		local style_finish = ends - 1 + offset
+		win:style(win.STYLE_CURSOR, style_start, style_finish)
 
-		-- start next search after the current match
-		search_from = to + 1
+		init = ends + 1
+
+		if init >= viewport.finish then
+			break
+		end
 	end
 end
 
