@@ -15,9 +15,7 @@ function highlight(pattern, win)
 		local from, to = string.find(content, pattern, search_from)
 
 		-- stop searching if no more matches found
-		if from == nil then
-			break
-		end
+		if from == nil then break end
 
 		-- mark
 		-- convert from 1-based index to 0-based
@@ -55,7 +53,7 @@ function hi_command(argv, force, win, selection, range)
 	elseif enabled_arg == "off" then
 		enabled = false
 	else
-		info:show('invalid arg')
+		vis:info('invalid arg')
 		return
 	end
 
@@ -65,6 +63,13 @@ function hi_command(argv, force, win, selection, range)
 end
 
 function hi_ls_command()
+	local t = {}
+	table.insert(t, 'patterns:')
+	for pattern, enabled in pairs(M.patterns) do
+		table.insert(t, pattern .. ' ' .. (enabled and 'on' or 'off'))
+	end
+	local s = table.concat(t, '\n')
+	vis:message(s)
 
 end
 
