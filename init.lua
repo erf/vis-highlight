@@ -8,7 +8,6 @@ function highlight(pattern, win)
 
 	local viewport = win.viewport
 	local content = win.file:content(viewport)
-	local offset = viewport.start
 	local init = 1
 
 	while true do
@@ -18,8 +17,8 @@ function highlight(pattern, win)
 			break
 		end
 
-		local style_start  = from - 1 + offset
-		local style_finish = ends - 1 + offset
+		local style_start  = from - 1 + viewport.start
+		local style_finish = ends - 1 + viewport.start
 		win:style(win.STYLE_CURSOR, style_start, style_finish)
 
 		init = ends + 1
