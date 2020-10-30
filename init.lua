@@ -53,9 +53,6 @@ function hi_command(argv, force, win, selection, range)
 		enabled = true
 	elseif enabled_a == "off" then
 		enabled = false
-	else
-		vis:info('invalid arg')
-		return
 	end
 
 	M.patterns[pattern_a] = enabled
