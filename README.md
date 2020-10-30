@@ -17,7 +17,7 @@ You can prepare patterns in your `visrc.lua` file with:
 
 ```
 local hi = require('plugins/vis-highlight')
-hi.patterns = { [' +\n'] =  true }
+hi.patterns[' +\n'] = true
 ```
 
 See [Patterns](https://www.lua.org/pil/20.2.html) in Lua docs.
