@@ -69,7 +69,7 @@ end
 
 function hi_cl_command()
 	M.patterns = {}
-	vis:info 'cleared'
+	vis:info 'cleared patterns'
 end
 
 vis:command_register('hi', hi_command)
