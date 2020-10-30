@@ -70,11 +70,17 @@ function hi_ls_command()
 	end
 	local s = table.concat(t, '\n')
 	vis:message(s)
+end
 
+function hi_cl_command()
+	M.patterns = {}
+	vis:info 'patterns cleared'
 end
 
 vis:command_register('hi', hi_command)
 
 vis:command_register('hi-ls', hi_ls_command)
+
+vis:command_register('hi-cl', hi_cl_command)
 
 return M
