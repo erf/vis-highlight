@@ -13,14 +13,22 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 You can add multiple patterns which will highlight the text until cleared or 
 disabled.
 
+You can prepare patterns in your `visrc.lua` file with:
+
+```
+local hi = require('plugins/vis-highlight')
+hi.patterns = { [' +\n'] =  true }
+```
+
 See [Patterns](https://www.lua.org/pil/20.2.html) in Lua docs.
 
 ## Style
 
-You can custom style matches with:
+You can add a custom style for matches with:
 
 ```
-require('plugins/vis-highlight').style = 'back:#444444,fore:#cccccc'
+local hi = require('plugins/vis-highlight')
+hi.style = 'back:#444444,fore:#cccccc'
 ```
 
 See Style Definition in [LPegLexer](https://scintilla.sourceforge.io/LPegLexer.html).
