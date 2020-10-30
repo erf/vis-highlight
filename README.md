@@ -4,12 +4,12 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight patte
 
 ## How to
  
-Press `:hi some-pattern` to highlight text with this Lua pattern.
+`:hi [pattern] (on/off)` - highlight text with pattern
 
-Disable with `:hi some-pattern off`.
+`:hi-ls` - list patterns
 
-List all patterns with `:hi-ls`.
+`:hi-cl` - clear patterns
 
 ## Links
 
-See [patterns](https://www.lua.org/pil/20.2.html)
+See Lua docs on [Patterns](https://www.lua.org/pil/20.2.html)
