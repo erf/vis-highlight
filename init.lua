@@ -55,11 +55,8 @@ end
 function hi_command(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local enabled = argv[2]
-
 	if not pattern then return end
-
 	M.patterns[pattern] = get_is_enabled(enabled)
-
 	return true
 end
 
