@@ -52,11 +52,41 @@ function get_is_enabled(enabled)
 	else return true end
 end
 
+function valid(pattern)
+
+	if not pattern then
+		vis:info('missing pattern')
+		return false
+	end
+
+	local ok, result, finish = pcall(string.find, '', pattern)
+
+	if not ok then
+		if result then
+	    	vis:info('invalid pattern: ' .. result)
+	    else
+	    	vis:info('invalid pattern')
+	    end
+	    return false
+	end
+	
+	if result and finish and finish < result  then
+    	vis:info('invalid range from ' .. result .. ' finish ' .. finish)
+    	return false
+	end
+
+	return true
+end
+
 function hi_command(argv, force, win, selection, range)
+
 	local pattern = argv[1]
 	local enabled = argv[2]
-	if not pattern then return end
+
+	if not valid(pattern) then return end
+
 	M.patterns[pattern] = get_is_enabled(enabled)
+
 	return true
 end
 
