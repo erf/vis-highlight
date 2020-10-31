@@ -63,16 +63,16 @@ function valid(pattern)
 
 	if not ok then
 		if result then
-	    	vis:info('invalid pattern: ' .. result)
-	    else
-	    	vis:info('invalid pattern')
-	    end
-	    return false
+			vis:info('invalid pattern: ' .. result)
+		else
+			vis:info('invalid pattern')
+		end
+		return false
 	end
 	
 	if result and finish and finish < result  then
-    	vis:info('invalid range from ' .. result .. ' finish ' .. finish)
-    	return false
+		vis:info('invalid range from ' .. result .. ' finish ' .. finish)
+		return false
 	end
 
 	return true
