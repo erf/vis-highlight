@@ -31,7 +31,7 @@ function highlight(pattern, win, content)
 end
 
 function on_win_highlight(win)
-	if styleId == nil then return end
+	if not styleId then return end
 	local content = win.file:content(win.viewport)
 	for pattern, enabled in pairs(M.patterns) do
 		if enabled then highlight(pattern, win, content) end
@@ -46,7 +46,7 @@ function on_win_open(win)
 	end
 end
 
-function get_is_enabled(enabled)
+function is_enabled(enabled)
 	if enabled == nil or enabled == "on" then return true
 	elseif enabled == "off" then return false
 	else return true end
@@ -79,14 +79,10 @@ function valid(pattern)
 end
 
 function hi_command(argv, force, win, selection, range)
-
 	local pattern = argv[1]
 	local enabled = argv[2]
-
 	if not valid(pattern) then return end
-
-	M.patterns[pattern] = get_is_enabled(enabled)
-
+	M.patterns[pattern] = is_enabled(enabled)
 	return true
 end
 
