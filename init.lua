@@ -16,27 +16,25 @@ function pattern_iterator(pattern, content)
 	end
 end
 
-function set_style(from, ends, offset, win)
+function set_style(from, ends, win)
+	local offset = win.viewport.start
 	local start  = from - 1 + offset
 	local finish = ends - 1 + offset
 	win:style(styleId, start, finish)
 end
 
-function highlight(pattern, win, viewport, content)
+function highlight(pattern, win, content)
 	for from, ends in pattern_iterator(pattern, content) do
-		set_style(from, ends, viewport.start, win)
-		if ends >= viewport.finish then break end
+		set_style(from, ends, win)
+		if ends >= win.viewport.finish then break end
 	end
 end
 
 function on_win_highlight(win)
 	if styleId == nil then return end
-	local viewport = win.viewport
-	local content = win.file:content(viewport)
+	local content = win.file:content(win.viewport)
 	for pattern, enabled in pairs(M.patterns) do
-		if enabled then
-			highlight(pattern, win, viewport, content)
-		end
+		if enabled then highlight(pattern, win, content) end
 	end
 end
 
@@ -48,20 +46,19 @@ function on_win_open(win)
 	end
 end
 
+function get_is_enabled(enabled)
+	if enabled == nil or enabled == "on" then return true
+	elseif enabled == "off" then return false
+	else return true end
+end
+
 function hi_command(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local enabled = argv[2]
 
 	if not pattern then return end
 
-	local is_enabled = true
-	if enabled == nil or enabled == "on" then
-		is_enabled = true
-	elseif enabled == "off" then
-		is_enabled = false
-	end
-
-	M.patterns[pattern] = is_enabled
+	M.patterns[pattern] = get_is_enabled(enabled)
 
 	return true
 end
@@ -75,11 +72,13 @@ function hi_ls_command(argv, force, win, selection, range)
 	end
 	local s = table.concat(t, '\n')
 	vis:message(s)
+	return true
 end
 
 function hi_cl_command(argv, force, win, selection, range)
 	M.patterns = {}
 	vis:info 'patterns cleared'
+	return true
 end
 
 function hi_rm_command(argv, force, win, selection, range)
