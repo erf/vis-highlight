@@ -2,8 +2,7 @@ local M = {}
 
 M.patterns = {}
 M.style = nil
-
-local HIGHLIGHT_STYLE_ID = 0 -- not sure what to set this..
+M.CUSTOM_STYLE_ID = 64
 local styleId = nil
 
 function pattern_iterator(pattern, content)
@@ -41,7 +40,7 @@ end
 function on_win_open(win)
 	styleId = win.STYLE_CURSOR
 	if M.style then
-		styleId = HIGHLIGHT_STYLE_ID
+		styleId = M.CUSTOM_STYLE_ID
 		win:style_define(styleId, M.style)
 	end
 end
