@@ -12,6 +12,18 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 `:hi-rm [pattern]` - remove pattern
 
+## Example
+               
+```
+:hi ' +\n' back:#444444
+:hi-ls
+:hi-rm " +\n"
+:hi hi back:yellow,fore:blue,underlined:true,bold:true
+:hi-cl
+```
+
+> You only need quotation marks if you use spaces in your patterns
+
 ## Patterns in visrc
 
 You can set multiple patterns with style in your `visrc.lua` file with:
