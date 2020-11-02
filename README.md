@@ -22,10 +22,9 @@ hi.patterns[' +\n'] = { style = 'back:#444444' }
 hi.patterns['hi'] = { style = 'back:yellow,fore:blue,underlined:true,bold:true' }
 ```
 
-If pattern is set to empty `{}` it defaults to `STYLE_CURSOR` style.
+> Notice the number of custom styles are limited to 64 and may be overridden by lexer styles
 
-> Notice the number of custom styles are limited to 64 and may be overridden by
-lexer styles.
+If pattern is set to empty `{}` it defaults to `STYLE_CURSOR` style.
 
 See [Patterns](https://www.lua.org/pil/20.2.html)
 
