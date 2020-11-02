@@ -4,33 +4,38 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 ## Commands
 
-`:hi [pattern] (style)` - highlight text with Lua pattern and an optional style
+`:hi [pattern] (style)` - highlight a Lua pattern with optional style
 
 `:hi-ls` - list patterns with style
 
 `:hi-cl` - clear patterns
 
-`:hi-rm [pattern]` - remove specific pattern
+`:hi-rm [pattern]` - remove pattern
 
-## Prepare patterns
+## Patterns in visrc
 
-You can prepare multiple patterns with style in your `visrc.lua` file with:
+You can set multiple patterns with style in your `visrc.lua` file with:
 
 ```
 local hi = require('plugins/vis-highlight')
 hi.patterns[' +\n'] = { style = 'back:#444444' }
+hi.patterns['hi'] = { style = 'back:yellow,fore:blue,underlined:true,bold:true' }
 ```
 
-Leave it empty for the default `STYLE_CURSOR` style.
-
-```
-local hi = require('plugins/vis-highlight')
-hi.patterns[' +\n'] = {}
-```
+If pattern is set to empty `{}` it defaults to `STYLE_CURSOR` style.
 
 > Notice the number of custom styles are limited to 64 and may be overridden by
 lexer styles.
 
-See [Patterns](https://www.lua.org/pil/20.2.html) in Lua docs.
+See [Patterns](https://www.lua.org/pil/20.2.html)
 
-See Style Definition in [LPegLexer](https://scintilla.sourceforge.io/LPegLexer.html).
+## Style definitions
+
+Style definitions may contain the following:
+
+- **fore**: Font face foreground color in 0xBBGGRR or "#RRGGBB" format.
+- **back**: Font face background color in 0xBBGGRR or "#RRGGBB" format.
+- **bold**: Whether or not the font face is bold. The default value is false.
+- **underlined**: Whether or not the font face is underlined. The default value is false.
+
+See [LPegLexer](https://scintilla.sourceforge.io/LPegLexer.html)
