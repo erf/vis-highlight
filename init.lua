@@ -2,7 +2,26 @@ local M = {}
 
 M.patterns = {}
 
-local nextStyleId = 64
+local styleIds = {}
+
+function createStyleIds()
+	local i = 0
+	local MAX_STYLE_ID = 64
+	return function()
+		i = i + 1
+		if i <= MAX_STYLE_ID then return i end
+		return nil
+	end
+end
+
+function initStyleIds()
+	styleIds = {}
+	for i in createStyleIds() do 
+		table.insert(styleIds, i)
+	end
+end
+
+initStyleIds()
 
 function pattern_iterator(pattern, content)
 	local init = 1
@@ -80,15 +99,16 @@ function valid_style(style)
 end
 
 function get_style(style, win)
+
 	if not style then
 		return { styleId = win.STYLE_CURSOR }
 	end
 
-	local id = nextStyleId
+	local id = table.remove(styleIds)
 	if valid_style(style) and win:style_define(id, style) then
-		nextStyleId = nextStyleId - 1
 		return { styleId = id, style = style }
 	end
+	table.insert(styleIds, id)
 
 	return { styleId = win.STYLE_CURSOR }
 end
@@ -97,11 +117,10 @@ function hi_command(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local style = argv[2]
 
-	if not valid_pattern(pattern) then
-		return
-	end
+	if not valid_pattern(pattern) then return end
 
 	M.patterns[pattern] = get_style(style, win)
+	vis:info('' .. tostring(M.patterns[pattern].styleId))
 
 	return true
 end
@@ -126,6 +145,7 @@ end
 
 function hi_cl_command(argv, force, win, selection, range)
 	M.patterns = {}
+	initStyleIds()
 	vis:info 'patterns cleared'
 	return true
 end
@@ -133,6 +153,11 @@ end
 function hi_rm_command(argv, force, win, selection, range)
 	local pattern = argv[1]
 	if not pattern then return end
+	local data = M.patterns[pattern]
+	if data and data.styleId and data.styleId ~= win.STYLE_CURSOR then
+		--add back styleId
+		table.insert(styleIds, data.styleId)
+	end
 	M.patterns[pattern] = nil
 	vis:info('pattern \"' .. pattern .. '\" removed')
 	return true
