@@ -116,12 +116,8 @@ end
 function hi_command(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local style = argv[2]
-
 	if not valid_pattern(pattern) then return end
-
 	M.patterns[pattern] = get_style(style, win)
-	vis:info('' .. tostring(M.patterns[pattern].styleId))
-
 	return true
 end
 
