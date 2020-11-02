@@ -1,9 +1,8 @@
 local M = {}
 
 M.patterns = {}
-M.style = nil
-M.CUSTOM_STYLE_ID = 64
-local styleId = nil
+
+local nextStyleId = 64
 
 function pattern_iterator(pattern, content)
 	local init = 1
@@ -15,43 +14,38 @@ function pattern_iterator(pattern, content)
 	end
 end
 
-function set_style(from, ends, win)
+function set_style(from, ends, win, styleId)
 	local offset = win.viewport.start
 	local start  = from - 1 + offset
 	local finish = ends - 1 + offset
 	win:style(styleId, start, finish)
 end
 
-function highlight(pattern, win, content)
+function highlight(pattern, styleId, win, content)
 	for from, ends in pattern_iterator(pattern, content) do
-		set_style(from, ends, win)
+		set_style(from, ends, win, styleId)
 		if ends >= win.viewport.finish then break end
 	end
 end
 
 function on_win_highlight(win)
-	if not styleId then return end
 	local content = win.file:content(win.viewport)
-	for pattern, enabled in pairs(M.patterns) do
-		if enabled then highlight(pattern, win, content) end
+	for pattern, data in pairs(M.patterns) do
+		if data.styleId then
+			highlight(pattern, data.styleId, win, content)
+		end
 	end
 end
 
 function on_win_open(win)
-	styleId = win.STYLE_CURSOR
-	if M.style then
-		styleId = M.CUSTOM_STYLE_ID
-		win:style_define(styleId, M.style)
+	for pattern, data in pairs(M.patterns) do
+		if not data.styleId then
+			M.patterns[pattern] = get_style(data.style, win)
+		end
 	end
 end
 
-function is_enabled(enabled)
-	if enabled == nil or enabled == "on" then return true
-	elseif enabled == "off" then return false
-	else return true end
-end
-
-function valid(pattern)
+function valid_pattern(pattern)
 
 	if not pattern then
 		vis:info('missing pattern')
@@ -77,20 +71,53 @@ function valid(pattern)
 	return true
 end
 
+function valid_style(style)
+	-- TODO improve style validation
+	if style then
+		return true
+	end
+	return false
+end
+
+function get_style(style, win)
+	if not style then
+		return { styleId = win.STYLE_CURSOR }
+	end
+
+	local id = nextStyleId
+	if valid_style(style) and win:style_define(id, style) then
+		nextStyleId = nextStyleId - 1
+		return { styleId = id, style = style }
+	end
+
+	return { styleId = win.STYLE_CURSOR }
+end
+
 function hi_command(argv, force, win, selection, range)
 	local pattern = argv[1]
-	local enabled = argv[2]
-	if not valid(pattern) then return end
-	M.patterns[pattern] = is_enabled(enabled)
+	local style = argv[2]
+
+	if not valid_pattern(pattern) then
+		return
+	end
+
+	M.patterns[pattern] = get_style(style, win)
+
 	return true
 end
 
 function hi_ls_command(argv, force, win, selection, range)
 	local t = {}
 	table.insert(t, 'patterns:')
-	for pattern, enabled in pairs(M.patterns) do
-		local str_esc = pattern:gsub('\n', '\\n')
-		table.insert(t, '\"' .. str_esc .. '\" ' .. (enabled and 'on' or 'off'))
+	for pattern, data in pairs(M.patterns) do
+		local pattern_escaped = pattern:gsub('\n', '\\n')
+		local style_str = ''
+		if data.style then
+			style_str = data.style
+		elseif data.styleId then
+			style_str = 'id ' .. data.styleId
+		end
+		table.insert(t, '\'' .. pattern_escaped .. '\' - ' .. style_str)
 	end
 	local s = table.concat(t, '\n')
 	vis:message(s)
