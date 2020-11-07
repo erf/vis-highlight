@@ -4,7 +4,7 @@ M.patterns = {}
 
 local styleIds = {}
 
-function createStyleIds()
+function styleIdIterator()
 	local i = 0
 	local MAX_STYLE_ID = 64
 	return function()
@@ -16,7 +16,7 @@ end
 
 function initStyleIds()
 	styleIds = {}
-	for i in createStyleIds() do 
+	for i in styleIdIterator() do 
 		table.insert(styleIds, i)
 	end
 end
