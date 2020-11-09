@@ -16,7 +16,7 @@ end
 
 function initStyleIds()
 	styleIds = {}
-	for i in styleIdIterator() do 
+	for i in styleIdIterator() do
 		table.insert(styleIds, i)
 	end
 end
@@ -50,7 +50,9 @@ end
 function on_win_highlight(win)
 	local content = win.file:content(win.viewport)
 	for pattern, data in pairs(M.patterns) do
-		if data.styleId then
+		if data.hideOnInsert and vis.mode == vis.modes.INSERT then
+			-- DO NOTHING
+		elseif data.styleId then
 			highlight(pattern, data.styleId, win, content)
 		end
 	end
@@ -59,7 +61,7 @@ end
 function on_win_open(win)
 	for pattern, data in pairs(M.patterns) do
 		if not data.styleId then
-			M.patterns[pattern] = get_style(data.style, win)
+			M.patterns[pattern] = create_data(data, win)
 		end
 	end
 end
@@ -98,26 +100,25 @@ function valid_style(style)
 	return false
 end
 
-function get_style(style, win)
-
-	if not style then
-		return { styleId = win.STYLE_CURSOR }
-	end
+function create_data(data, win)
+	local style = data.style
+	local hideOnInsert = data.hideOnInsert
 
 	local id = table.remove(styleIds)
 	if valid_style(style) and win:style_define(id, style) then
-		return { styleId = id, style = style }
+		return { styleId = id, style = style, hideOnInsert = hideOnInsert }
 	end
 	table.insert(styleIds, id)
 
-	return { styleId = win.STYLE_CURSOR }
+	return { styleId = win.STYLE_CURSOR, hideOnInsert = hideOnInsert }
 end
 
 function hi_command(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local style = argv[2]
 	if not valid_pattern(pattern) then return end
-	M.patterns[pattern] = get_style(style, win)
+	local data = { style = style }
+	M.patterns[pattern] = create_data(data, win)
 	return true
 end
 
@@ -151,7 +152,7 @@ function hi_rm_command(argv, force, win, selection, range)
 	if not pattern then return end
 	local data = M.patterns[pattern]
 	if data and data.styleId and data.styleId ~= win.STYLE_CURSOR then
-		--add back styleId
+		-- return styleId for reuse
 		table.insert(styleIds, data.styleId)
 	end
 	M.patterns[pattern] = nil
