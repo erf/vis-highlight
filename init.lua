@@ -2,7 +2,7 @@ local M = {}
 
 M.patterns = {}
 
-local styleIds = {}
+local styleIdStack = {}
 
 function styleIdIterator()
 	local i = 0
@@ -15,9 +15,9 @@ function styleIdIterator()
 end
 
 function initStyleIds()
-	styleIds = {}
+	styleIdStack = {}
 	for i in styleIdIterator() do
-		table.insert(styleIds, i)
+		table.insert(styleIdStack, i)
 	end
 end
 
@@ -104,11 +104,11 @@ function create_data(data, win)
 	local style = data.style
 	local hideOnInsert = data.hideOnInsert
 
-	local id = table.remove(styleIds)
+	local id = table.remove(styleIdStack)
 	if valid_style(style) and win:style_define(id, style) then
 		return { styleId = id, style = style, hideOnInsert = hideOnInsert }
 	end
-	table.insert(styleIds, id)
+	table.insert(styleIdStack, id)
 
 	return { styleId = win.STYLE_CURSOR, hideOnInsert = hideOnInsert }
 end
@@ -153,7 +153,7 @@ function hi_rm_command(argv, force, win, selection, range)
 	local data = M.patterns[pattern]
 	if data and data.styleId and data.styleId ~= win.STYLE_CURSOR then
 		-- return styleId for reuse
-		table.insert(styleIds, data.styleId)
+		table.insert(styleIdStack, data.styleId)
 	end
 	M.patterns[pattern] = nil
 	vis:info('pattern \"' .. pattern .. '\" removed')
