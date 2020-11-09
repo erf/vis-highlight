@@ -30,13 +30,16 @@ You can set multiple patterns with style in your `visrc.lua` file with:
 
 ```
 local hi = require('plugins/vis-highlight')
-hi.patterns[' +\n'] = { style = 'back:#444444' }
+hi.patterns[' +\n'] = { style = 'back:#444444', hideOnInsert = true }
 hi.patterns['hi'] = { style = 'back:yellow,fore:blue,underlined:true,bold:true' }
 ```
 
 > Notice the number of custom styles are limited to 64 and may be overridden by lexer styles
 
 If pattern is set to empty `{}` it defaults to `STYLE_CURSOR` style.
+
+You can set a `hideOnInsert = true` option to not highlight pattern when in 
+`vis.modes.INSERT`.
 
 See [Patterns](https://www.lua.org/pil/20.2.html)
 
