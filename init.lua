@@ -4,7 +4,7 @@ M.patterns = {}
 
 local styleIdStack = {}
 
-function styleIdIterator()
+local styleIdIterator = function()
 	local i = 0
 	local MAX_STYLE_ID = 64
 	return function()
@@ -14,7 +14,7 @@ function styleIdIterator()
 	end
 end
 
-function initStyleIds()
+local initStyleIds = function()
 	styleIdStack = {}
 	for i in styleIdIterator() do
 		table.insert(styleIdStack, i)
@@ -23,7 +23,7 @@ end
 
 initStyleIds()
 
-function pattern_iterator(pattern, content)
+local pattern_iterator = function(pattern, content)
 	local init = 1
 	return function()
 		local from, ends = string.find(content, pattern, init)
@@ -33,40 +33,21 @@ function pattern_iterator(pattern, content)
 	end
 end
 
-function set_style(from, ends, win, styleId)
+local set_style = function(from, ends, win, styleId)
 	local offset = win.viewport.start
 	local start  = from - 1 + offset
 	local finish = ends - 1 + offset
 	win:style(styleId, start, finish)
 end
 
-function highlight(pattern, styleId, win, content)
+local highlight = function(pattern, styleId, win, content)
 	for from, ends in pattern_iterator(pattern, content) do
 		set_style(from, ends, win, styleId)
 		if ends >= win.viewport.finish then break end
 	end
 end
 
-function on_win_highlight(win)
-	local content = win.file:content(win.viewport)
-	for pattern, data in pairs(M.patterns) do
-		if data.hideOnInsert and vis.mode == vis.modes.INSERT then
-			-- DO NOTHING
-		elseif data.styleId then
-			highlight(pattern, data.styleId, win, content)
-		end
-	end
-end
-
-function on_win_open(win)
-	for pattern, data in pairs(M.patterns) do
-		if not data.styleId then
-			M.patterns[pattern] = create_data(data, win)
-		end
-	end
-end
-
-function valid_pattern(pattern)
+local valid_pattern = function(pattern)
 
 	if not pattern then
 		vis:info('missing pattern')
@@ -83,7 +64,7 @@ function valid_pattern(pattern)
 		end
 		return false
 	end
-	
+
 	if result and finish and finish < result  then
 		vis:info('invalid range from ' .. result .. ' finish ' .. finish)
 		return false
@@ -92,7 +73,7 @@ function valid_pattern(pattern)
 	return true
 end
 
-function valid_style(style)
+local valid_style = function(style)
 	-- TODO improve style validation
 	if style then
 		return true
@@ -100,7 +81,7 @@ function valid_style(style)
 	return false
 end
 
-function create_data(data, win)
+local create_data = function(data, win)
 	local style = data.style
 	local hideOnInsert = data.hideOnInsert
 
@@ -113,7 +94,26 @@ function create_data(data, win)
 	return { styleId = win.STYLE_CURSOR, hideOnInsert = hideOnInsert }
 end
 
-function hi_command(argv, force, win, selection, range)
+local on_win_highlight = function(win)
+	local content = win.file:content(win.viewport)
+	for pattern, data in pairs(M.patterns) do
+		if data.hideOnInsert and vis.mode == vis.modes.INSERT then
+			-- DO NOTHING
+		elseif data.styleId then
+			highlight(pattern, data.styleId, win, content)
+		end
+	end
+end
+
+local on_win_open = function(win)
+	for pattern, data in pairs(M.patterns) do
+		if not data.styleId then
+			M.patterns[pattern] = create_data(data, win)
+		end
+	end
+end
+
+local hi_command = function(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local style = argv[2]
 	if not valid_pattern(pattern) then return end
@@ -122,7 +122,7 @@ function hi_command(argv, force, win, selection, range)
 	return true
 end
 
-function hi_ls_command(argv, force, win, selection, range)
+local hi_ls_command = function(argv, force, win, selection, range)
 	local t = {}
 	table.insert(t, 'patterns:')
 	for pattern, data in pairs(M.patterns) do
@@ -140,14 +140,14 @@ function hi_ls_command(argv, force, win, selection, range)
 	return true
 end
 
-function hi_cl_command(argv, force, win, selection, range)
+local hi_cl_command = function(argv, force, win, selection, range)
 	M.patterns = {}
 	initStyleIds()
 	vis:info 'patterns cleared'
 	return true
 end
 
-function hi_rm_command(argv, force, win, selection, range)
+local hi_rm_command = function(argv, force, win, selection, range)
 	local pattern = argv[1]
 	if not pattern then return end
 	local data = M.patterns[pattern]
