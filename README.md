@@ -1,4 +1,4 @@
-# vis-highlight
+# vis-highlight 🌈
 
 A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua patterns.
 
