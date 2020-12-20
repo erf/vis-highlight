@@ -8,18 +8,18 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 `:hi-ls` - list patterns with style
 
-`:hi-cl` - clear patterns
+`:hi-clear` - clear patterns
 
-`:hi-rm [pattern]` - remove pattern
+`:hi-rm [pattern]` - remove specific pattern
 
 ## Example
-               
+
 ```
 :hi ' +\n' back:#444444
 :hi-ls
 :hi-rm " +\n"
 :hi hi back:yellow,fore:blue,underlined:true,bold:true
-:hi-cl
+:hi-clear
 ```
 
 > You only need quotation marks if you use spaces in your patterns

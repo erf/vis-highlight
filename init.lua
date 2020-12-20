@@ -140,7 +140,7 @@ local hi_ls_command = function(argv, force, win, selection, range)
 	return true
 end
 
-local hi_cl_command = function(argv, force, win, selection, range)
+local hi_clear_command = function(argv, force, win, selection, range)
 	M.patterns = {}
 	initStyleIds()
 	vis:info 'patterns cleared'
@@ -168,7 +168,7 @@ vis:command_register('hi', hi_command)
 
 vis:command_register('hi-ls', hi_ls_command)
 
-vis:command_register('hi-cl', hi_cl_command)
+vis:command_register('hi-clear', hi_clear_command)
 
 vis:command_register('hi-rm', hi_rm_command)
 
