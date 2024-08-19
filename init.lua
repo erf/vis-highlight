@@ -34,7 +34,7 @@ local pattern_iterator = function(pattern, content)
 end
 
 local set_style = function(from, ends, win, styleId)
-	local offset = win.viewport.start
+	local offset = win.viewport.bytes.start
 	local start  = from - 1 + offset
 	local finish = ends - 1 + offset
 	win:style(styleId, start, finish)
@@ -43,7 +43,7 @@ end
 local highlight = function(pattern, styleId, win, content)
 	for from, ends in pattern_iterator(pattern, content) do
 		set_style(from, ends, win, styleId)
-		if ends >= win.viewport.finish then break end
+		if ends >= win.viewport.bytes.finish then break end
 	end
 end
 
@@ -95,7 +95,7 @@ local create_data = function(data, win)
 end
 
 local on_win_highlight = function(win)
-	local content = win.file:content(win.viewport)
+	local content = win.file:content(win.viewport.bytes)
 	for pattern, data in pairs(M.patterns) do
 		if data.hideOnInsert and vis.mode == vis.modes.INSERT then
 			-- DO NOTHING
