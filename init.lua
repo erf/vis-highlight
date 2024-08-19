@@ -95,7 +95,7 @@ local create_data = function(data, win)
 end
 
 local on_win_highlight = function(win)
-	local content = win.file:content(win.viewport)
+	local content = win.file:content(win.viewport.bytes)
 	for pattern, data in pairs(M.patterns) do
 		if data.hideOnInsert and vis.mode == vis.modes.INSERT then
 			-- DO NOTHING
