@@ -6,11 +6,13 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 `:hi [pattern] (style)` - highlight a Lua pattern with optional style
 
-`:hi-ls` - list patterns with style
+> This will highlight all open windows with the given pattern and style
+
+`:hi-ls` - list patterns and style
 
 `:hi-clear` - clear patterns
 
-`:hi-rm [pattern]` - remove specific pattern
+`:hi-rm [pattern]` - remove a specific pattern
 
 ## Example
 
@@ -24,24 +26,25 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 > You only need quotation marks if you use spaces in your patterns
 
-## Patterns in visrc
+## Configure patterns in visrc
 
-You can set multiple patterns with style in your `visrc.lua` file with:
+You can configure multiple patterns with style in your `visrc.lua` file:
 
 ```
 local hi = require('plugins/vis-highlight')
+
 hi.patterns[' +\n'] = { style = 'back:#444444', hideOnInsert = true }
 hi.patterns['hi'] = { style = 'back:yellow,fore:blue,underlined:true,bold:true' }
 ```
 
-> Notice the number of custom styles are limited to 64 and may be overridden by lexer styles
+> The number of custom styles are limited to 64 and may be overridden by lexer styles
 
-If pattern is set to empty `{}` it defaults to `STYLE_CURSOR` style.
+If style is empty, `win.STYLE_CURSOR` will be used.
 
-You can set a `hideOnInsert = true` option to not highlight pattern when in 
-`vis.modes.INSERT`.
+You can set the `hideOnInsert = true` option to avoid highlighting when in 
+`INSERT` mode.
 
-See [Patterns](https://www.lua.org/pil/20.2.html)
+See [Patterns](https://www.lua.org/pil/20.2.html) for how to Lua define patterns.
 
 ## Style definitions
 
@@ -52,4 +55,5 @@ Style definitions may contain the following:
 - **bold**: Whether or not the font face is bold. The default value is false.
 - **underlined**: Whether or not the font face is underlined. The default value is false.
 
-See [LPegLexer](https://scintilla.sourceforge.io/LPegLexer.html)
+See [LPegLexer](https://scintilla.sourceforge.io/LPegLexer.html) for  more info on styles.
+
