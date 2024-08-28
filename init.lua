@@ -104,7 +104,7 @@ local hi_command = function(argv, force, win, selection, range)
 		return
 	end
 	if not valid_style(style) then
-		vis:info('missing style')
+		vis:info('missing style - e.g. fore:red,back:blue,bold')
 		return
 	end
 	M.patterns[pattern] = { style = style }
