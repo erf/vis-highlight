@@ -57,17 +57,24 @@ end
 local on_win_highlight = function(win)
 	local content = win.file:content(win.viewport.bytes)
 	for pattern, data in pairs(M.patterns) do
+
 		if data.hideOnInsert and vis.mode == vis.modes.INSERT then
-			-- DO NOTHING
-		elseif data.styleId then
-            for from, ends in pattern_iterator(pattern, content) do
-                local offset = win.viewport.bytes.start
-                local start  = from - 1 + offset
-                local finish = ends - 1 + offset
-                win:style(data.styleId, start, finish)
-                if ends >= win.viewport.bytes.finish then break end
-            end
+			goto continue
 		end
+        
+		if not data.styleId then
+            goto continue
+        end
+
+        for from, ends in pattern_iterator(pattern, content) do
+            local offset = win.viewport.bytes.start
+            local start  = from - 1 + offset
+            local finish = ends - 1 + offset
+            win:style(data.styleId, start, finish)
+            if ends >= win.viewport.bytes.finish then break end
+        end
+
+		::continue::
 	end
 end
 
