@@ -6,7 +6,7 @@ A [vis-plugin](https://github.com/martanne/vis/wiki/Plugins/) to highlight Lua p
 
 `:hi [pattern] (style)` - highlight a Lua pattern with optional style
 
-> This will highlight all open windows with the given pattern and style
+> This will highlight all windows with the given pattern and style
 
 `:hi-ls` - list patterns and style
 
