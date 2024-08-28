@@ -33,65 +33,25 @@ local pattern_iterator = function(pattern, content)
 	end
 end
 
-local set_style = function(from, ends, win, styleId)
-	local offset = win.viewport.bytes.start
-	local start  = from - 1 + offset
-	local finish = ends - 1 + offset
-	win:style(styleId, start, finish)
-end
-
-local highlight = function(pattern, styleId, win, content)
-	for from, ends in pattern_iterator(pattern, content) do
-		set_style(from, ends, win, styleId)
-		if ends >= win.viewport.bytes.finish then break end
-	end
-end
-
+-- e.g. pattern = 'foo'
 local valid_pattern = function(pattern)
-
 	if not pattern then
-		vis:info('missing pattern')
 		return false
 	end
-
 	local ok, result, finish = pcall(string.find, '', pattern)
-
 	if not ok then
-		if result then
-			vis:info('invalid pattern: ' .. result)
-		else
-			vis:info('invalid pattern')
-		end
 		return false
 	end
-
-	if result and finish and finish < result  then
-		vis:info('invalid range from ' .. result .. ' finish ' .. finish)
-		return false
-	end
-
 	return true
 end
 
+-- e.g. style = 'fore:red,back:blue,bold'
 local valid_style = function(style)
 	-- TODO improve style validation
-	if style then
-		return true
+	if not style then
+		return false
 	end
-	return false
-end
-
-local create_data = function(data, win)
-	local style = data.style
-	local hideOnInsert = data.hideOnInsert
-
-	local id = table.remove(styleIdStack)
-	if valid_style(style) and win:style_define(id, style) then
-		return { styleId = id, style = style, hideOnInsert = hideOnInsert }
-	end
-	table.insert(styleIdStack, id)
-
-	return { styleId = win.STYLE_CURSOR, hideOnInsert = hideOnInsert }
+	return true
 end
 
 local on_win_highlight = function(win)
@@ -100,25 +60,48 @@ local on_win_highlight = function(win)
 		if data.hideOnInsert and vis.mode == vis.modes.INSERT then
 			-- DO NOTHING
 		elseif data.styleId then
-			highlight(pattern, data.styleId, win, content)
+            for from, ends in pattern_iterator(pattern, content) do
+                local offset = win.viewport.bytes.start
+                local start  = from - 1 + offset
+                local finish = ends - 1 + offset
+                win:style(data.styleId, start, finish)
+                if ends >= win.viewport.bytes.finish then break end
+            end
 		end
 	end
 end
 
+local define_styles_for_all_windows = function()
+    for pattern, data in pairs(M.patterns) do
+        if not data.styleId then
+            data.styleId = table.remove(styleIdStack, 1)
+	        table.insert(styleIdStack, data.styleId)
+        end
+        for win in vis:windows() do
+            if win:style_define(data.styleId, data.style) then
+                -- SUCCESS
+            end
+        end
+    end
+end
+
 local on_win_open = function(win)
-	for pattern, data in pairs(M.patterns) do
-		if not data.styleId then
-			M.patterns[pattern] = create_data(data, win)
-		end
-	end
+    define_styles_for_all_windows()
 end
 
 local hi_command = function(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local style = argv[2]
-	if not valid_pattern(pattern) then return end
-	local data = { style = style }
-	M.patterns[pattern] = create_data(data, win)
+	if not valid_pattern(pattern) then
+		vis:info('invalid pattern')
+		return
+	end
+	if not valid_style(style) then
+		vis:info('missing style')
+		return
+	end
+	M.patterns[pattern] = { style = style }
+	define_styles_for_all_windows()
 	return true
 end
 
@@ -143,7 +126,7 @@ end
 local hi_clear_command = function(argv, force, win, selection, range)
 	M.patterns = {}
 	initStyleIds()
-	vis:info 'patterns cleared'
+	vis:info 'cleared all patterns'
 	return true
 end
 
