@@ -33,6 +33,7 @@ You can configure multiple patterns with style in your `visrc.lua` file:
 ```
 local hi = require('plugins/vis-highlight')
 
+hi.patterns['  +'] = { style = 'back:#666600' }
 hi.patterns[' +\n'] = { style = 'back:#444444', hideOnInsert = true }
 hi.patterns['hi'] = { style = 'back:yellow,fore:blue,underlined:true,bold:true' }
 ```
