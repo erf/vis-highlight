@@ -64,43 +64,43 @@ local on_win_highlight = function(win)
 
 		for from, ends in pattern_iterator(pattern, content) do
 			local offset = win.viewport.bytes.start
-			local start  = from - 1 + offset
+			local start = from - 1 + offset
 			local finish = ends - 1 + offset
 			if not data.style then
 				win:style(win.STYLE_CURSOR, start, finish)
 			else 
 				win:style(data.styleId, start, finish)
 			end
-            if ends >= win.viewport.bytes.finish then break end
-        end
+			if ends >= win.viewport.bytes.finish then break end
+	end
 
 		::continue::
 	end
 end
 
 local define_styles_for_all_windows = function()
-    for pattern, data in pairs(M.patterns) do
+	for pattern, data in pairs(M.patterns) do
 		if not data.style then
 			goto continue
 		end
 
-        if not data.styleId then
-            data.styleId = table.remove(styleIdStack, 1)
-	        table.insert(styleIdStack, data.styleId)
-        end
+		if not data.styleId then
+			data.styleId = table.remove(styleIdStack, 1)
+			table.insert(styleIdStack, data.styleId)
+		end
 
-        for win in vis:windows() do
-            if win:style_define(data.styleId, data.style) then
-                -- SUCCESS
-            end
-        end
+		for win in vis:windows() do
+			if win:style_define(data.styleId, data.style) then
+				-- SUCCESS
+			end
+		end
 		
 		::continue::
-    end
+	end
 end
 
 local on_win_open = function(win)
-    define_styles_for_all_windows()
+	define_styles_for_all_windows()
 end
 
 local hi_command = function(argv, force, win, selection, range)
