@@ -71,8 +71,10 @@ local on_win_highlight = function(win)
 			else 
 				win:style(data.styleId, start, finish)
 			end
-			if ends >= win.viewport.bytes.finish then break end
-	end
+			if ends >= win.viewport.bytes.finish then 
+				break 
+			end
+		end
 
 		::continue::
 	end
