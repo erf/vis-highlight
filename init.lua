@@ -52,6 +52,12 @@ local on_win_highlight = function(win)
 			goto continue
 		end
 
+		-- patterns can be added directly to M.patterns, so define style lazily
+		if data.style and not data.styleId then
+			data.styleId = acquire_style_id()
+			vis.ui:style_define(data.styleId, data.style)
+		end
+
 		for from, ends in pattern_iterator(pattern, content) do
 			local offset = win.viewport.bytes.start
 			local start = from - 1 + offset
