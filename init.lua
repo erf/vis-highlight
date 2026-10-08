@@ -2,26 +2,16 @@ local M = {}
 
 M.patterns = {}
 
-local styleIdStack = {}
+-- style ids allocated with vis.ui:style_push(), kept for reuse when patterns are removed
+local freeStyleIds = {}
 
-local styleIdIterator = function()
-	local i = 0
-	local MAX_STYLE_ID = 64
-	return function()
-		i = i + 1
-		if i <= MAX_STYLE_ID then return i end
-		return nil
-	end
+local acquire_style_id = function()
+	return table.remove(freeStyleIds) or vis.ui:style_push()
 end
 
-local initStyleIds = function()
-	styleIdStack = {}
-	for i in styleIdIterator() do
-		table.insert(styleIdStack, i)
-	end
+local release_style_id = function(styleId)
+	if styleId then table.insert(freeStyleIds, styleId) end
 end
-
-initStyleIds()
 
 local pattern_iterator = function(pattern, content)
 	local init = 1
@@ -67,7 +57,7 @@ local on_win_highlight = function(win)
 			local start = from - 1 + offset
 			local finish = ends - 1 + offset
 			if not data.style then
-				win:style(win.STYLE_CURSOR, start, finish)
+				win:style(vis.ui.style_ids.CURSOR, start, finish)
 			else 
 				win:style(data.styleId, start, finish)
 			end
@@ -80,31 +70,6 @@ local on_win_highlight = function(win)
 	end
 end
 
-local define_styles_for_all_windows = function()
-	for pattern, data in pairs(M.patterns) do
-		if not data.style then
-			goto continue
-		end
-
-		if not data.styleId then
-			data.styleId = table.remove(styleIdStack, 1)
-			table.insert(styleIdStack, data.styleId)
-		end
-
-		for win in vis:windows() do
-			if win:style_define(data.styleId, data.style) then
-				-- SUCCESS
-			end
-		end
-		
-		::continue::
-	end
-end
-
-local on_win_open = function(win)
-	define_styles_for_all_windows()
-end
-
 local hi_command = function(argv, force, win, selection, range)
 	local pattern = argv[1]
 	local style = argv[2]
@@ -115,10 +80,17 @@ local hi_command = function(argv, force, win, selection, range)
 	if not valid_style(style) then
 		-- vis:info('missing style - e.g. fore:red,back:blue,bold')
 		-- return
-		-- let's just use default style win.STYLE_CURSOR
+		-- let's just use default style vis.ui.style_ids.CURSOR
 	end
-	M.patterns[pattern] = { style = style }
-	define_styles_for_all_windows()
+	local old = M.patterns[pattern]
+	local data = { style = style }
+	if style then
+		data.styleId = (old and old.styleId) or acquire_style_id()
+		vis.ui:style_define(data.styleId, style)
+	elseif old then
+		release_style_id(old.styleId)
+	end
+	M.patterns[pattern] = data
 	return true
 end
 
@@ -141,8 +113,10 @@ local hi_ls_command = function(argv, force, win, selection, range)
 end
 
 local hi_clear_command = function(argv, force, win, selection, range)
+	for _, data in pairs(M.patterns) do
+		release_style_id(data.styleId)
+	end
 	M.patterns = {}
-	initStyleIds()
 	vis:info 'cleared all patterns'
 	return true
 end
@@ -151,9 +125,9 @@ local hi_rm_command = function(argv, force, win, selection, range)
 	local pattern = argv[1]
 	if not pattern then return end
 	local data = M.patterns[pattern]
-	if data and data.styleId and data.styleId ~= win.STYLE_CURSOR then
+	if data then
 		-- return styleId for reuse
-		table.insert(styleIdStack, data.styleId)
+		release_style_id(data.styleId)
 	end
 	M.patterns[pattern] = nil
 	vis:info('pattern \"' .. pattern .. '\" removed')
@@ -161,8 +135,6 @@ local hi_rm_command = function(argv, force, win, selection, range)
 end
 
 vis.events.subscribe(vis.events.WIN_HIGHLIGHT, on_win_highlight)
-
-vis.events.subscribe(vis.events.WIN_OPEN, on_win_open)
 
 vis:command_register('hi', hi_command)
 
